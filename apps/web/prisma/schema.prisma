@@ -1,15 +1,130 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "sqlite" url = env("DATABASE_URL") }
-enum EventStatus { DRAFT ACTIVE LOCKED }
-enum CandidateStatus { ACTIVE LOCKED }
-model Judge { id String @id @default(cuid()) name String email String? phone String? active Boolean @default(true) panelMembers PanelMember[] invites JudgeInvite[] submissions ScoreSubmission[] session JudgeSession? createdAt DateTime @default(now()) }
-model InterviewEvent { id String @id @default(cuid()) name String date DateTime status EventStatus @default(DRAFT) criteriaJson String candidates Candidate[] panels Panel[] submissions ScoreSubmission[] createdAt DateTime @default(now()) updatedAt DateTime @updatedAt }
-model Candidate { id String @id @default(cuid()) eventId String name String referenceNumber String status CandidateStatus @default(ACTIVE) event InterviewEvent @relation(fields:[eventId],references:[id],onDelete:Cascade) submissions ScoreSubmission[] @@unique([eventId, referenceNumber]) }
-model Panel { id String @id @default(cuid()) eventId String name String event InterviewEvent @relation(fields:[eventId],references:[id],onDelete:Cascade) members PanelMember[] invites JudgeInvite[] @@unique([eventId,name]) }
-model PanelMember { panelId String judgeId String panel Panel @relation(fields:[panelId],references:[id],onDelete:Cascade) judge Judge @relation(fields:[judgeId],references:[id],onDelete:Cascade) @@id([panelId,judgeId]) }
-model JudgeInvite { id String @id @default(cuid()) panelId String judgeId String tokenHash String @unique tokenEncrypted String expiresAt DateTime active Boolean @default(true) panel Panel @relation(fields:[panelId],references:[id],onDelete:Cascade) judge Judge @relation(fields:[judgeId],references:[id],onDelete:Cascade) createdAt DateTime @default(now()) }
-model ScoreSubmission { id String @id @default(cuid()) eventId String candidateId String judgeId String submittedAt DateTime @default(now()) updatedAt DateTime @updatedAt status String @default("SUBMITTED") event InterviewEvent @relation(fields:[eventId],references:[id],onDelete:Cascade) candidate Candidate @relation(fields:[candidateId],references:[id],onDelete:Cascade) judge Judge @relation(fields:[judgeId],references:[id],onDelete:Cascade) scores CriterionScore[] note JudgeNote? @@unique([candidateId,judgeId]) }
-model CriterionScore { id String @id @default(cuid()) submissionId String criterionId String value Float submission ScoreSubmission @relation(fields:[submissionId],references:[id],onDelete:Cascade) @@unique([submissionId,criterionId]) }
-model JudgeNote { id String @id @default(cuid()) submissionId String @unique text String submission ScoreSubmission @relation(fields:[submissionId],references:[id],onDelete:Cascade) }
-model JudgeSession { id String @id @default(cuid()) judgeId String @unique tokenHash String @unique panelId String? expiresAt DateTime active Boolean @default(true) judge Judge @relation(fields:[judgeId],references:[id],onDelete:Cascade) createdAt DateTime @default(now()) }
-model AuditLog { id String @id @default(cuid()) actor String action String entity String entityId String? metadata String? createdAt DateTime @default(now()) }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum EventStatus {
+  DRAFT
+  ACTIVE
+  LOCKED
+}
+
+enum CandidateStatus {
+  ACTIVE
+  LOCKED
+}
+
+model Judge {
+  id String @id @default(cuid())
+  name String
+  email String?
+  phone String?
+  active Boolean @default(true)
+  panelMembers PanelMember[]
+  invites JudgeInvite[]
+  submissions ScoreSubmission[]
+  session JudgeSession?
+  createdAt DateTime @default(now())
+}
+model InterviewEvent {
+  id String @id @default(cuid())
+  name String
+  date DateTime
+  status EventStatus @default(DRAFT)
+  criteriaJson String
+  candidates Candidate[]
+  panels Panel[]
+  submissions ScoreSubmission[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Candidate {
+  id String @id @default(cuid())
+  eventId String
+  name String
+  referenceNumber String
+  status CandidateStatus @default(ACTIVE)
+  event InterviewEvent @relation(fields:[eventId],references:[id],onDelete:Cascade)
+  submissions ScoreSubmission[]
+  @@unique([eventId, referenceNumber])
+}
+model Panel {
+  id String @id @default(cuid())
+  eventId String
+  name String
+  event InterviewEvent @relation(fields:[eventId],references:[id],onDelete:Cascade)
+  members PanelMember[]
+  invites JudgeInvite[]
+  @@unique([eventId,name])
+}
+model PanelMember {
+  panelId String
+  judgeId String
+  panel Panel @relation(fields:[panelId],references:[id],onDelete:Cascade)
+  judge Judge @relation(fields:[judgeId],references:[id],onDelete:Cascade)
+  @@id([panelId,judgeId])
+}
+model JudgeInvite {
+  id String @id @default(cuid())
+  panelId String
+  judgeId String
+  tokenHash String @unique
+  tokenEncrypted String
+  expiresAt DateTime
+  active Boolean @default(true)
+  panel Panel @relation(fields:[panelId],references:[id],onDelete:Cascade)
+  judge Judge @relation(fields:[judgeId],references:[id],onDelete:Cascade)
+  createdAt DateTime @default(now())
+}
+model ScoreSubmission {
+  id String @id @default(cuid())
+  eventId String
+  candidateId String
+  judgeId String
+  submittedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status String @default("SUBMITTED")
+  event InterviewEvent @relation(fields:[eventId],references:[id],onDelete:Cascade)
+  candidate Candidate @relation(fields:[candidateId],references:[id],onDelete:Cascade)
+  judge Judge @relation(fields:[judgeId],references:[id],onDelete:Cascade)
+  scores CriterionScore[]
+  note JudgeNote?
+  @@unique([candidateId,judgeId])
+}
+model CriterionScore {
+  id String @id @default(cuid())
+  submissionId String
+  criterionId String
+  value Float
+  submission ScoreSubmission @relation(fields:[submissionId],references:[id],onDelete:Cascade)
+  @@unique([submissionId,criterionId])
+}
+model JudgeNote {
+  id String @id @default(cuid())
+  submissionId String @unique
+  text String
+  submission ScoreSubmission @relation(fields:[submissionId],references:[id],onDelete:Cascade)
+}
+model JudgeSession {
+  id String @id @default(cuid())
+  judgeId String @unique
+  tokenHash String @unique
+  panelId String?
+  expiresAt DateTime
+  active Boolean @default(true)
+  judge Judge @relation(fields:[judgeId],references:[id],onDelete:Cascade)
+  createdAt DateTime @default(now())
+}
+model AuditLog {
+  id String @id @default(cuid())
+  actor String
+  action String
+  entity String
+  entityId String?
+  metadata String?
+  createdAt DateTime @default(now())
+}
