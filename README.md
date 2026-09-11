@@ -1,15 +1,16 @@
 # Interview Jury Scoring Hub
 
-A mobile-first interview scoring platform for selecting a five-judge panel, collecting independent candidate evaluations, and exporting auditable results to Excel.
+A mobile-first interview scoring platform where judges reserve a scoring desk, form a five-person panel, assess contestants, and export auditable results to Excel.
 
 ## Features
 
-- Development admin sign-in and role-scoped admin dashboard
-- A 15-judge directory, exact-five panel validation, candidates, criteria, locks, and invite links
-- Token-scoped judge scoring screens with editable submissions while unlocked
-- Weighted score calculations, completion progress, ranking, ties, and audit events
+- Password-free judge check-in with an eight-hour browser session lock
+- A 16-judge mock directory and exact-five panel builder
+- Contestant selection and editable scoring while the event and contestant remain unlocked
+- A 100-point rubric imported from the shared marksheet: Dedication, Commitment, Team Spirit, Problem Solving, Communication, Attire, Attendance, Practical Task, Concepts, and Past Work
+- Score totals, completion progress, ranking, ties, and audit events
 - Excel export with `Judges`, `Candidates`, `Panels`, `Raw Scores`, and `Final Results` sheets
-- Seed data: one event, 15 judges, five active panel members, three candidates, and sample scores
+- Seed data: one active event, 16 mock judges, and 74 contestants from the supplied marksheet
 
 ## Architecture
 
@@ -29,7 +30,9 @@ pnpm db:seed
 pnpm dev
 ```
 
-Open `http://localhost:3000`. The development admin is available at `/admin/login` with the credentials in `.env` (defaults are deliberately development-only). The seeded judge links appear on the event detail page.
+Open `http://localhost:3000` and choose an available mock judge. The judge then selects five panel members and continues to the contestant scorecard. The session can be released from the panel screen, or it expires after eight hours.
+
+The existing `/admin` screens remain available for event administration and Excel exports. They use the development-only credentials in `.env`.
 
 ## Tests and verification
 
@@ -51,7 +54,7 @@ Copy `apps/web/.env.example`; never commit `.env` or the SQLite database.
 | `DATABASE_URL` | Prisma SQLite connection URL |
 | `ADMIN_EMAIL` | Development-only admin identity |
 | `ADMIN_PASSWORD` | Development-only admin password |
-| `ADMIN_SESSION_SECRET` | Cookie signing secret (use a random value outside development) |
+| `ADMIN_SESSION_SECRET` | Cookie signing secret and token-encryption key (use a random value outside development) |
 | `INVITE_TOKEN_TTL_DAYS` | Lifetime for judge links |
 
 ## Excel sync
