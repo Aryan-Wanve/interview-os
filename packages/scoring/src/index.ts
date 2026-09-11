@@ -14,6 +14,7 @@ export function validateScores(scores: Record<string, number>, criteria: Criteri
 }
 export function submissionOverall(submission: Submission, criteria: Criterion[]) {
   validateScores(submission.scores, criteria);
+  if (new Set(criteria.map(c => c.max ?? 10)).size > 1) return rounded(criteria.reduce((sum, c) => sum + submission.scores[c.id] * (c.weight ?? 1), 0));
   const totalWeight = criteria.reduce((sum, c) => sum + (c.weight ?? 1), 0);
   return criteria.reduce((sum, c) => sum + submission.scores[c.id] * (c.weight ?? 1), 0) / totalWeight;
 }
