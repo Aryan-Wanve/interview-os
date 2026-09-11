@@ -1,0 +1,10 @@
+node_modules
+.pnpm-store
+.turbo
+.next
+*.db
+*.db-journal
+.env
+apps/web/.env
+coverage
+dist

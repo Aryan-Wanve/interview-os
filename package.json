@@ -1,0 +1,7 @@
+{
+  "name": "interview-jury-scoring-hub",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": { "dev": "turbo dev", "build": "turbo build", "lint": "turbo lint", "typecheck": "turbo typecheck", "test": "turbo test", "db:push": "pnpm --filter web prisma db push", "db:seed": "pnpm --filter web prisma db seed" },
+  "devDependencies": { "turbo": "^2.3.3", "typescript": "^5.7.2" }
+}
